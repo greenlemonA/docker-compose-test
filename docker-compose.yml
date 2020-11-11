@@ -1,0 +1,30 @@
+version: '3'
+volumes:
+  portainer_data:
+services:
+  my-first-redis:
+     image: 'redis'
+  node-app:
+     restart: always
+     tty: true
+     build: .
+     ports:
+       - "8081"
+  my-nginx:
+    image: 'nginx'
+    volumes: 
+      - '/Users/user/workplace/docker-compose-test/nginx.conf:/etc/nginx/nginx.conf'
+    ports:
+      - '8080:80'
+    links:
+      - 'node-app'
+    depends_on: 
+      - 'node-app'
+  portainer:
+    image:  portainer/portainer
+    ports:
+      - "9000:9000"
+    command: -H unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
